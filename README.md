@@ -4,16 +4,13 @@ An exploratory study of **28,382 bank customer records** using a Jupyter noteboo
 
 [![Open in Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/harsh-github007/Analysis_Churn/blob/main/Churn_analysis.ipynb)
 
-## Main findings
+## Main finding
 
-- **5,260 customers churned: 18.53%.** The notebook reports the numerator, denominator and a 95% Wilson interval.
-- **Single categorical associations are small.** The largest ordinary Cramér's V among the eleven tests is 0.058, for transaction recency.
-- **Recent activity has a higher observed churn rate**, but the event timing and mechanism are unknown. This does not establish that activity causes churn or that dormant accounts are protected.
-- **Seven of eleven tests remain below q = 0.05** after Benjamini–Yekutieli adjustment. Net worth does not pass the adjusted threshold. Statistical evidence and practical effect size are reported separately.
-- **Small groups need caution.** Only five customers have ten or more dependents; their wide interval is shown rather than treated as a dependable segment.
-- **Missing information is not zero.** The analysis explicitly recognizes the CSV's `NaT` date sentinel, includes unknown groups in descriptive charts, and reports exclusions for each association test.
-- **Balances and transaction flows form different correlation clusters.** The notebook also compares financial medians and interquartile ranges by churn without discarding extreme records.
+**Individual demographic associations with churn are weak; transaction recency has the largest measured association, and even that is small (Cramér's V = 0.058).**
 
+In this sample, 5,260 of 28,382 customers churned (18.53%). Recent activity is associated with a higher observed churn rate, which makes event timing worth investigating before using recency in a model. These are associations, not measured predictive performance. Feature and churn dates are not documented, so this snapshot cannot support a credible future-period test.
+
+The notebook retains confidence intervals, sample sizes, missing-data checks and adjusted statistical tests. Detailed evidence is available in the [result tables](reports/hypothesis_tests.csv).
 ![Segment churn rates with customer counts and 95% intervals](reports/02-segment-rates.png)
 
 All panels share the same percentage scale. Dashed lines show the overall rate; intervals are individual, descriptive intervals rather than simultaneous comparisons.
