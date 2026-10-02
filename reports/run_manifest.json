@@ -1,0 +1,17 @@
+{
+  "dataset_sha256": "54529b90d6095130639c5e30e7daa5ae005e6c66e846a7db7d67e69c9551afcf",
+  "rows": 28382,
+  "churned": 5260,
+  "churn_rate": 0.18532872947642873,
+  "reference_date": "2019-12-31",
+  "random_seed": 2026,
+  "monte_carlo_resamples": 9999,
+  "p_adjustment": "Benjamini\u2013Yekutieli, eleven tests",
+  "versions": {
+    "python": "3.14.7",
+    "pandas": "3.0.6",
+    "numpy": "2.5.3",
+    "scipy": "1.18.1",
+    "matplotlib": "3.11.2"
+  }
+}
