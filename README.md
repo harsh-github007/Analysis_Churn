@@ -1,60 +1,76 @@
-# Exploratory Data Analysis of Bank Customer Churn
+# Bank Customer Churn Analysis
 
-Which customers of a bank close their accounts, and what do they have in common? This notebook explores 28,382 customers: their demographics, account details, balances and transactions. It tests eleven hypotheses about who churns, reporting how large each difference is and not only whether it is significant.
+An exploratory study of **28,382 bank customer records** using a Jupyter notebook. It examines demographics, account activity, missing information and financial behaviour, with clear charts and reproducible statistical results.
 
 [![Open in Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/harsh-github007/Analysis_Churn/blob/main/Churn_analysis.ipynb)
 
-## Key findings
+## Main findings
 
-- **18.5% of customers churned.**
-- **No single attribute explains much of it.** Every categorical association has a Cramér's V of 0.06 or less. With 28,000 customers, a gap of one or two percentage points is "significant", so the notebook reports churn rates alongside p-values.
-- **Recent activity doesn't protect against churn.** Customers inactive for more than 6 months churn *less* (13.6%) than those who transacted recently (20.6%). Churners look like active customers moving their money out, not dormant accounts.
-- **Several expected patterns don't hold:**
-  - Customers under 18 churn *less* (12.9%) than adults (19.4%).
-  - Customers with dependents churn *more* (22.5%, against 17.4% with none).
-  - Net worth category barely matters (17.9%–19.2%).
-  - Branch size makes no difference.
-- **Missing values carry information.** Customers with no recorded dependents churn at 21.4%, so that gap should be kept as its own category rather than filled with 0.
-- **Balances and transactions are heavily skewed,** with outliers that repeat from month to month. Balance variables are strongly correlated with each other, credit and debit variables moderately so, and the two groups are nearly unrelated.
+- **5,260 customers churned: 18.53%.** The notebook reports the numerator, denominator and a 95% Wilson interval.
+- **Single categorical associations are small.** The largest ordinary Cramér's V among the eleven tests is 0.058, for transaction recency.
+- **Recent activity has a higher observed churn rate**, but the event timing and mechanism are unknown. This does not establish that activity causes churn or that dormant accounts are protected.
+- **Seven of eleven tests remain below q = 0.05** after Benjamini–Yekutieli adjustment. Net worth does not pass the adjusted threshold. Statistical evidence and practical effect size are reported separately.
+- **Small groups need caution.** Only five customers have ten or more dependents; their wide interval is shown rather than treated as a dependable segment.
+- **Missing information is not zero.** The analysis explicitly recognizes the CSV's `NaT` date sentinel, includes unknown groups in descriptive charts, and reports exclusions for each association test.
+- **Balances and transaction flows form different correlation clusters.** The notebook also compares financial medians and interquartile ranges by churn without discarding extreme records.
 
-| Hypothesis | Churn rates | Cramér's V | Verdict |
-| --- | --- | ---: | --- |
-| Females churn less than males | 17.6% vs 19.2% | 0.02 | True, but small |
-| Young customers churn more | Under 18: 12.9%; 18–59: 19.4% | 0.04 | Reversed |
-| Lower net worth churns more | 19.1% / 17.9% / 19.2% | 0.02 | No meaningful effect |
-| Customers with dependents churn less | None: 17.4%; 1–3: 22.5% | 0.05 | Reversed |
-| Inactive for 6+ months churn more | 13.6% vs 20.6% | 0.06 | Reversed |
-| Small cities churn more | 19.3% vs 17.8% | 0.02 | True, but small |
-| Small branches churn more | 18.5% vs 19.9% | 0.00 | No difference |
+![Segment churn rates with customer counts and 95% intervals](reports/02-segment-rates.png)
 
-## What's in the notebook
+All panels share the same percentage scale. Dashed lines show the overall rate; intervals are individual, descriptive intervals rather than simultaneous comparisons.
 
-1. **Variable identification and typecasting.** IDs, branch, city and net worth category become categories; the last transaction date is split into day, week, month, weekday and days since the last transaction.
-2. **Univariate analysis.** Distributions and summary statistics for numerical variables, value counts for categorical ones, missing values, and outliers using Tukey's fences (1.5 × IQR beyond the quartiles).
-3. **Bivariate analysis, numerical.** Pearson, Kendall and Spearman correlation heatmaps, plus log-scale scatter plots of the balance and transaction variables.
-4. **Bivariate analysis, categorical.** A chi-square test for each hypothesis above, with churn rate per group and Cramér's V for the strength of the association.
-5. **Missing values against churn,** for gender, dependents and occupation.
-6. **Conclusion.**
+## What the notebook includes
 
-## Data
+1. **Data audit:** schema, unique customers, binary labels, valid dates, missing values and negative balances.
+2. **Baseline:** customer counts, churn rate and uncertainty.
+3. **Segment comparisons:** rates, group sizes and Wilson intervals for demographics and recency.
+4. **Eleven association tests:** expected-cell diagnostics, Monte Carlo tests for sparse tables, ordinary and bias-corrected Cramér's V, and adjusted p-values.
+5. **Sensitivity checks:** vary the arbitrary sample-size cutoffs for cities and branches.
+6. **Missingness:** recorded versus absent information, with denominators and uncertainty.
+7. **Financial behaviour:** signed-log display of skewed distributions, pairwise Spearman correlations with available-pair counts, financial medians and interquartile ranges.
+8. **Conclusions:** limits of the evidence and a concrete path toward prospective modelling.
 
-`churn_analysis.csv` has 28,382 rows, one per customer, with 21 columns:
-- **Customer details:** age, gender, dependents, occupation, city, net worth category.
-- **Account details:** vintage in days, branch.
-- **Balances:** current, previous month end, and average for the previous two quarters.
-- **Transactions:** current and previous month credits and debits.
-- **Last transaction date:** during 2019.
-- **`churn` flag.**
+![Effect sizes and adjusted p-values](reports/03-association-strength.png)
 
-Some fields have missing values: last transaction date (3,223), dependents (2,463), city (803), gender (525) and occupation (80).
+## Data and interpretation
 
-## Running it
+[`churn_analysis.csv`](churn_analysis.csv) contains 21 original fields: customer identifiers, demographics, branch and city codes, account vintage, balances, credits, debits, last transaction date and the `churn` flag. The source CSV is preserved unchanged.
 
-Click the Colab badge above; the notebook loads the data from this repository by itself. To run it locally:
+Recency uses **31 December 2019**, with an exploratory 182-day split. City and branch groups describe the number of customer records in this sample, not population or real branch capacity. Dependents are not household size; net worth codes are not verified income brackets. Missing categories remain visible in descriptive summaries and are excluded from substantive association tests, with exclusions reported.
+
+The repository does not document the original sampling process, precise churn definition or feature/event timing. Results describe this sample. They do not establish causation, intervention effectiveness or future predictive accuracy. A predictive model should follow confirmation of label timing and a genuine future-period validation set.
+
+## Run the analysis
+
+In Colab, choose **Runtime → Run all**. The notebook installs its analysis dependencies when running in Colab and downloads the CSV if no local copy exists.
+
+Locally, use Python 3.11 or newer:
 
 ```bash
-pip install -r requirements.txt
-jupyter notebook Churn_analysis.ipynb
+python -m venv .venv
+# macOS / Linux
+source .venv/bin/activate
+# Windows PowerShell: .\.venv\Scripts\Activate.ps1
+python -m pip install -r requirements.txt
+jupyter lab Churn_analysis.ipynb
 ```
 
-It runs top to bottom on current versions of pandas (3.x), seaborn (0.13) and SciPy.
+Run every cell in order. The committed notebook includes executed outputs, so its analysis can also be read directly on GitHub.
+
+## Reproducible outputs
+
+The notebook writes six charts, CSV result tables and a run manifest into [`reports`](reports/). Useful outputs include:
+
+- [Segment rates and intervals](reports/segment_rates.csv)
+- [Eleven tests, effect sizes and adjusted p-values](reports/hypothesis_tests.csv)
+- [Data quality](reports/data_quality.csv) and [missingness rates](reports/missingness_rates.csv)
+- [Cutoff sensitivity](reports/size_cutoff_sensitivity.csv)
+- [Financial summaries](reports/financial_summary.csv), [comparisons by churn](reports/financial_by_churn.csv), [correlations](reports/spearman_correlations.csv) and [pair counts](reports/correlation_pair_counts.csv)
+- [Run manifest](reports/run_manifest.json): dataset SHA-256, date reference, random seed, resample count and package versions.
+
+The full notebook was executed locally. Integrity assertions check row counts, customer IDs, segment denominators, interval bounds, the eleven-test family and unchanged input data.
+
+## Statistical methods
+
+Wilson score intervals are individual 95% binomial intervals. Association tests use uncorrected Pearson χ²; when any expected cell is below five, a fixed-seed Monte Carlo test uses 9,999 fixed-margin tables. The eleven overlapping tests use Benjamini–Yekutieli adjustment to account for multiple comparisons under dependence. Monte Carlo p-values have finite resampling resolution.
+
+References: [SciPy contingency tests](https://docs.scipy.org/doc/scipy/reference/generated/scipy.stats.contingency.chi2_contingency.html), [SciPy false-discovery control](https://docs.scipy.org/doc/scipy/reference/generated/scipy.stats.false_discovery_control.html), and [Bergsma's bias correction for Cramér's V](https://doi.org/10.1016/j.jkss.2012.10.002).
